@@ -149,13 +149,17 @@ async function run() {
       res.json(result);
     });
 
-    app.delete('/bookings/:bookingId', async (req, res) => {
+    app.patch('/bookings/:bookingId', async (req, res) => {
       const { bookingId } = req.params;
-      const result = await bookingsCollection.deleteOne({
-        _id: new ObjectId(bookingId)
-      });
 
-      res.json(result)
+      const result = await bookingsCollection.updateOne(
+        { _id: new ObjectId(bookingId) },
+        {
+          $set: { status: "cancelled" }
+        }
+      );
+
+      res.json(result);
     });
 
     await client.db("admin").command({ ping: 1 });
