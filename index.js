@@ -51,6 +51,15 @@ async function run() {
       res.json(result)
     })
 
+    app.get('/featured-tutors', async (req, res) => {
+      const result = await tutorCollection
+        .find()
+        .limit(6)
+        .toArray();
+
+      res.json(result);
+    })
+
     app.post('/bookings', async (req, res) => {
       const bookingData = req.body;
       console.log(bookingData)
