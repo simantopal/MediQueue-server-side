@@ -45,11 +45,27 @@ async function run() {
     })
 
     app.get('/tutor/:id', async (req, res) => {
-      const { id } = req.params
-      const result = await tutorCollection.findOne({ _id: new ObjectId(id) })
+      try {
+        const { id } = req.params;
 
-      res.json(result)
-    })
+        if (!ObjectId.isValid(id)) {
+          return res.status(400).json({ message: "Invalid tutor id" });
+        }
+
+        const result = await tutorCollection.findOne({
+          _id: new ObjectId(id),
+        });
+
+        if (!result) {
+          return res.status(404).json({ message: "Tutor not found" });
+        }
+
+        res.json(result);
+
+      } catch (error) {
+        res.status(500).json({ message: "Server error" });
+      }
+    });
 
     app.get('/featured-tutors', async (req, res) => {
       const result = await tutorCollection
@@ -60,13 +76,19 @@ async function run() {
       res.json(result);
     })
 
-    app.post('/bookings', async (req, res) => {
+    app.post("/bookings", async (req, res) => {
       const bookingData = req.body;
-      console.log(bookingData)
-      const result = await bookingsCollection.insertOne(bookingData);
+      const result = await bookingsCollection.insertOne(bookingData)
 
       res.json(result);
     });
+
+    app.get('/bookings/:userId', async(req, res) => {
+      const {userId} = req.params;
+      const result = await bookingsCollection.find({userId:userId}).toArray();
+
+      res.json(result)
+    })
 
     app.get('/bookings', async (req, res) => {
       const email = req.query.email;
@@ -79,6 +101,13 @@ async function run() {
 
       res.json(result);
     });
+
+    app.delete('/bookings/:bookingId', async(req, res) => {
+      const {bookingId} = req.params;
+      const result = await bookingsCollection.deleteOne({_id: new ObjectId(bookingId)})
+
+      res.json(result)
+    })
 
 
     await client.db("admin").command({ ping: 1 });
