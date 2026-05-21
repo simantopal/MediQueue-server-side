@@ -30,9 +30,7 @@ const JWKS = createRemoteJWKSet(
   new URL(`${process.env.CLIENT_URL}/api/auth/jwks`)
 );
 
-// =========================
-// VERIFY TOKEN MIDDLEWARE
-// =========================
+
 const verifyToken = async (req, res, next) => {
   const authHeader = req?.headers.authorization;
 
@@ -64,9 +62,7 @@ async function run() {
     const tutorCollection = db.collection("tutors");
     const bookingsCollection = db.collection("bookings");
 
-    // =========================
-    // GET ALL TUTORS
-    // =========================
+
     app.get("/tutor", async (req, res) => {
       try {
         const { search, startDate, endDate } = req.query;
@@ -97,9 +93,7 @@ async function run() {
       }
     });
 
-    // =========================
-    // GET MY TUTORS
-    // =========================
+
     app.get("/my-tutors/:email", verifyToken, async (req, res) => {
       try {
         const { email } = req.params;
@@ -111,9 +105,7 @@ async function run() {
       }
     });
 
-    // =========================
-    // POST TUTOR (FIXED)
-    // =========================
+
     app.post("/tutor", verifyToken, async (req, res) => {
       try {
         const tutorData = req.body;
@@ -133,9 +125,7 @@ async function run() {
       }
     });
 
-    // =========================
-    // GET SINGLE TUTOR
-    // =========================
+
     app.get("/tutor/:id", verifyToken, async (req, res) => {
       try {
         const { id } = req.params;
@@ -158,17 +148,13 @@ async function run() {
       }
     });
 
-    // =========================
-    // FEATURED TUTORS
-    // =========================
+
     app.get("/featured-tutors", async (req, res) => {
       const result = await tutorCollection.find().limit(6).toArray();
       res.json(result);
     });
 
-    // =========================
-    // DELETE TUTOR
-    // =========================
+
     app.delete("/tutors/:id", verifyToken, async (req, res) => {
       try {
         const { id } = req.params;
@@ -183,9 +169,7 @@ async function run() {
       }
     });
 
-    // =========================
-    // PATCH TUTOR (FIXED)
-    // =========================
+
     app.patch("/tutors/:id", verifyToken, async (req, res) => {
       const { id } = req.params;
 
@@ -203,9 +187,7 @@ async function run() {
       res.json(result);
     });
 
-    // =========================
-    // BOOKINGS (FIXED SAFE)
-    // =========================
+
     app.post("/bookings", verifyToken, async (req, res) => {
       try {
         const bookingData = req.body;
@@ -230,7 +212,7 @@ async function run() {
           });
         }
 
-        // 🔥 FIX HERE
+
         const currentSlot = Number(tutor.slot || 0);
 
         if (isNaN(currentSlot)) {
@@ -274,9 +256,7 @@ async function run() {
       }
     });
 
-    // =========================
-    // BOOKINGS GET
-    // =========================
+
     app.get("/bookings/:userId", async (req, res) => {
       const result = await bookingsCollection
         .find({ userId: req.params.userId })
@@ -294,9 +274,7 @@ async function run() {
       res.json(result);
     });
 
-    // =========================
-    // CANCEL BOOKING
-    // =========================
+    
     app.patch("/bookings/:bookingId", verifyToken, async (req, res) => {
       const { bookingId } = req.params;
 
