@@ -24,6 +24,20 @@ const client = new MongoClient(uri, {
   }
 });
 
+const verifyToken = (req, res, next) => {
+      const authHeader = req?.headers.authorization
+      if(!authHeader) {
+        return res.status(401).json({message: "Unauthorized"})
+      }
+      const token = authHeader.split(" ")[1]
+      if(!token) {
+        return res.status(401).json({message: "Unauthorized"})
+      }
+      
+
+        next()
+    }
+
 async function run() {
   try {
     await client.connect();
@@ -87,7 +101,9 @@ async function run() {
     // =========================
     // GET SINGLE TUTOR (UNCHANGED)
     // =========================
-    app.get('/tutor/:id', async (req, res) => {
+    //middleware
+
+    app.get('/tutor/:id', verifyToken, async (req, res) => {
       try {
         const { id } = req.params;
 
